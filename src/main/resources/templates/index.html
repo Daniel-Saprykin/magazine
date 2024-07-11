@@ -2,6 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Главная страница</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -133,7 +136,7 @@
         <button id="openModalBtn">Добавить запись</button>
     </div>
     <div class="table-container">
-        <table>
+        <table id="recordTable">
             <thead>
             <tr>
                 <th>Дата</th>
@@ -225,6 +228,10 @@
 </div>
 
 <script>
+    $(document).ready(function() {
+        $('#recordTable').DataTable();
+    });
+
     // Получаем модальное окно
     var modal = document.getElementById("myModal");
     var modalTitle = document.getElementById("modalTitle");
