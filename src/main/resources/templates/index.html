@@ -166,32 +166,33 @@
 <div id="myModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 id="modalTitle">Добавить запись</h2>
+            <h2 id="modalTitle">Редактировать запись</h2>
             <span class="close">&times;</span>
         </div>
         <div class="modal-body">
+            <button id="editBtn" type="button" style="margin-bottom: 20px;">Редактировать</button>
             <form id="recordForm" action="#" method="post">
                 <div class="form-row">
                     <div class="form-group">
                         <label for="date">Дата:</label>
-                        <input type="date" id="date" name="date" required>
+                        <input type="date" id="date" name="date" required disabled>
                     </div>
                     <div class="form-group">
                         <label for="time">Время:</label>
-                        <input type="time" id="time" name="time" required>
+                        <input type="time" id="time" name="time" required disabled>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="shift">Смена:</label>
-                    <input type="number" id="shift" name="shift" min="1" max="3" required>
+                    <input type="number" id="shift" name="shift" min="1" max="3" required disabled>
                 </div>
                 <div class="form-group">
                     <label for="executor">Исполнитель:</label>
-                    <input type="text" id="executor" name="executor" required>
+                    <input type="text" id="executor" name="executor" required disabled>
                 </div>
                 <div class="form-group">
                     <label for="address">Адрес:</label>
-                    <input list="addresses" id="address" name="address" required>
+                    <input list="addresses" id="address" name="address" required disabled>
                     <datalist id="addresses">
                         <option value="Лященко 8, кв 54">
                         <option value="Курчатова 1, кв 38">
@@ -200,23 +201,23 @@
                 </div>
                 <div class="form-group">
                     <label for="important">Важно:</label>
-                    <input type="checkbox" id="important" name="important">
+                    <input type="checkbox" id="important" name="important" disabled>
                 </div>
                 <div class="form-group">
                     <label for="description">Описание заявки:</label>
-                    <textarea id="description" name="description" required></textarea>
+                    <textarea id="description" name="description" required disabled></textarea>
                 </div>
                 <div class="form-group">
                     <label for="result">Результат:</label>
-                    <textarea id="result" name="result"></textarea>
+                    <textarea id="result" name="result" disabled></textarea>
                 </div>
                 <div class="form-group">
                     <label for="completionDate">Дата исполнения:</label>
-                    <input type="date" id="completionDate" name="completionDate">
+                    <input type="date" id="completionDate" name="completionDate" disabled>
                 </div>
                 <div class="form-group">
-                    <button type="submit">OK</button>
-                    <button type="button" class="close">Отмена</button>
+                    <button type="submit" disabled>OK</button>
+                    <button type="button" class="close-btn">Отмена</button>
                 </div>
             </form>
         </div>
@@ -235,6 +236,12 @@
     // Получаем элемент <span>, который закрывает модальное окно
     var span = document.getElementsByClassName("close")[0];
 
+    // Получаем кнопку "Отмена", которая закрывает модальное окно
+    var closeBtn = document.getElementsByClassName("close-btn")[0];
+
+    // Получаем кнопку "Редактировать"
+    var editBtn = document.getElementById("editBtn");
+
     // Когда пользователь нажимает на кнопку, открываем модальное окно
     btn.onclick = function() {
         openAddModal();
@@ -242,6 +249,11 @@
 
     // Когда пользователь нажимает на <span> (x), закрываем модальное окно
     span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Когда пользователь нажимает на кнопку "Отмена", закрываем модальное окно
+    closeBtn.onclick = function() {
         modal.style.display = "none";
     }
 
@@ -257,6 +269,7 @@
         form.reset();
         modalTitle.textContent = "Добавить запись";
         form.action = "/addRecord";
+        setFormEditable(true);
 
         var today = new Date().toISOString().split('T')[0];
         document.getElementById("date").value = today;
@@ -278,6 +291,7 @@
             .then(data => {
                 modalTitle.textContent = "Редактировать запись";
                 form.action = `/updateRecord/${id}`;
+                setFormEditable(false);
 
                 document.getElementById("date").value = data.date;
                 document.getElementById("time").value = data.time;
@@ -292,6 +306,21 @@
                 modal.style.display = "block";
             })
             .catch(error => console.error('Error:', error));
+    }
+
+    // Установить поля формы в редактируемый или нередактируемый режим
+    function setFormEditable(editable) {
+        var elements = form.elements;
+        for (var i = 0; i < elements.length; i++) {
+            elements[i].disabled = !editable;
+        }
+        editBtn.style.display = editable ? "none" : "inline-block";
+        form.querySelector('button[type="submit"]').disabled = !editable;
+    }
+
+    // Когда пользователь нажимает на кнопку "Редактировать", делаем форму редактируемой
+    editBtn.onclick = function() {
+        setFormEditable(true);
     }
 </script>
 </body>
