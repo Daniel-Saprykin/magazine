@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Главная страница</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100vh;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-bottom: 2px solid #000;
+        }
+        .header button {
+            margin: 0 5px;
+        }
+        .table-container {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        .important {
+            background-color: yellow;
+        }
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 800px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-body label {
+            margin-top: 10px;
+        }
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            flex: 1;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            flex: 2;
+            padding: 5px;
+            margin-left: 10px;
+        }
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-row .form-group {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .form-row .form-group:last-child {
+            margin-right: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <button id="openModalBtn">Добавить запись</button>
+    </div>
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Смена</th>
+                <th>Время</th>
+                <th>Исполнитель</th>
+                <th>Адрес</th>
+                <th>Описание заявки</th>
+                <th>Результат</th>
+                <th>Дата исполнения</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="record : ${records}" th:class="${record.important} ? 'important' : ''">
+                <td th:text="${record.date}"></td>
+                <td th:text="${record.shift}"></td>
+                <td th:text="${record.time}"></td>
+                <td th:text="${record.executor}"></td>
+                <td th:text="${record.address}"></td>
+                <td th:text="${record.description}"></td>
+                <td th:text="${record.result}"></td>
+                <td th:text="${record.completionDate}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Модальное окно -->
+<div id="myModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Добавить запись</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form action="#" th:action="@{/addRecord}" th:object="${record}" method="post">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="date">Дата:</label>
+                        <input type="date" id="date" th:field="*{date}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="time">Время:</label>
+                        <input type="time" id="time" th:field="*{time}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="shift">Смена:</label>
+                    <input type="number" id="shift" th:field="*{shift}" min="1" max="3" required>
+                </div>
+                <div class="form-group">
+                    <label for="executor">Исполнитель:</label>
+                    <input type="text" id="executor" th:field="*{executor}" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Адрес:</label>
+                    <input list="addresses" id="address" th:field="*{address}" required>
+                    <datalist id="addresses">
+                        <option value="Лященко 8, кв 54">
+                        <option value="Курчатова 1, кв 38">
+                        <option value="Звездная 14, кв 10">
+                        <option value="Звездная 14, кв 10">
+                        <option value="Звездная 1, кв 1">
+                        <option value="Звездная 1, кв 2">
+                        <option value="Звездная 1, кв 3">
+                        <option value="Звездная 1, кв 100">
+                        <option value="Звездная 14, кв 1000">
+                        <option value="Звездная 5, кв 10">
+                        <option value="Звездная 6, кв 10">
+                        <option value="Звездная 7, кв 10">
+
+                    </datalist>
+                </div>
+                <div class="form-group">
+                    <label for="important">Важно:</label>
+                    <input type="checkbox" id="important" th:field="*{important}">
+                </div>
+                <div class="form-group">
+                    <label for="description">Описание заявки:</label>
+                    <textarea id="description" th:field="*{description}" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="result">Результат:</label>
+                    <textarea id="result" th:field="*{result}"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="completionDate">Дата исполнения:</label>
+                    <input type="date" id="completionDate" th:field="*{completionDate}">
+                </div>
+                <div class="form-group">
+                    <button type="submit">OK</button>
+                    <button type="button" class="close">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Получаем модальное окно
+    var modal = document.getElementById("myModal");
+
+    // Получаем кнопку, которая открывает модальное окно
+    var btn = document.getElementById("openModalBtn");
+
+    // Получаем элемент <span>, который закрывает модальное окно
+    var span = document.getElementsByClassName("close")[0];
+
+    // Когда пользователь нажимает на кнопку, открываем модальное окно
+    btn.onclick = function() {
+        // Установить текущую дату по умолчанию
+        var today = new Date().toISOString().split('T')[0];
+        document.getElementById("date").value = today;
+
+        // Установить текущее время по умолчанию
+        var now = new Date();
+        var hours = now.getHours().toString().padStart(2, '0');
+        var minutes = now.getMinutes().toString().padStart(2, '0');
+        var currentTime = hours + ':' + minutes;
+        document.getElementById("time").value = currentTime;
+
+        modal.style.display = "block";
+    }
+
+    // Когда пользователь нажимает на <span> (x), закрываем модальное окно
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Когда пользователь нажимает в любом месте за пределами модального окна, закрываем его
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+</body>
+</html>

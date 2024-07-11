@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Добавить запись</title>
+</head>
+<body>
+<h2>Добавить запись</h2>
+<form action="#" th:action="@{/addRecord}" th:object="${record}" method="post">
+    <label for="date">Дата:</label>
+    <input type="date" id="date" th:field="*{date}" required><br>
+
+    <label for="shift">Смена:</label>
+    <input type="number" id="shift" th:field="*{shift}" min="1" max="3" required><br>
+
+    <label for="time">Время:</label>
+    <input type="time" id="time" th:field="*{time}" required><br>
+
+    <label for="executor">Исполнитель:</label>
+    <input type="text" id="executor" th:field="*{executor}" required><br>
+
+    <label for="address">Адрес:</label>
+    <input type="text" id="address" th:field="*{address}" required><br>
+
+    <label for="important">Важно:</label>
+    <input type="checkbox" id="important" th:field="*{important}"><br>
+
+    <label for="description">Описание заявки:</label>
+    <textarea id="description" th:field="*{description}" required></textarea><br>
+
+    <label for="result">Результат:</label>
+    <textarea id="result" th:field="*{result}" required></textarea><br>
+
+    <label for="completionDate">Дата исполнения:</label>
+    <input type="date" id="completionDate" th:field="*{completionDate}" required><br>
+
+    <button type="submit">OK</button>
+    <button type="button" onclick="location.href='/'">Отмена</button>
+</form>
+</body>
+</html>
