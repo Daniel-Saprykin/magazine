@@ -216,7 +216,7 @@
                 </div>
                 <div class="form-group">
                     <button type="submit">OK</button>
-                    <button type="button" class="close">Отмена</button>
+                    <button type="button" class="close-btn">Отмена</button>
                 </div>
             </form>
         </div>
@@ -235,6 +235,9 @@
     // Получаем элемент <span>, который закрывает модальное окно
     var span = document.getElementsByClassName("close")[0];
 
+    // Получаем кнопку "Отмена", которая закрывает модальное окно
+    var closeBtn = document.getElementsByClassName("close-btn")[0];
+
     // Когда пользователь нажимает на кнопку, открываем модальное окно
     btn.onclick = function() {
         openAddModal();
@@ -242,6 +245,11 @@
 
     // Когда пользователь нажимает на <span> (x), закрываем модальное окно
     span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Когда пользователь нажимает на кнопку "Отмена", закрываем модальное окно
+    closeBtn.onclick = function() {
         modal.style.display = "none";
     }
 
