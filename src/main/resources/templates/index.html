@@ -145,6 +145,7 @@
     <div class="header">
         <button id="openModalBtn">Добавить запись</button>
         <button id="openAddAddressModalBtn">Добавить адрес</button>
+        <button id="openAddExecutorModalBtn">Добавить исполнителя</button>
     </div>
     <div class="table-container">
         <table id="recordTable">
@@ -255,6 +256,28 @@
     </div>
 </div>
 
+<!-- Модальное окно для добавления исполнителя -->
+<div id="addExecutorModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Добавить исполнителя</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="executorForm" action="/addExecutor" method="post">
+                <div class="form-group">
+                    <label for="executor">Исполнитель:</label>
+                    <input type="text" id="newExecutor" name="executor" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit">OK</button>
+                    <button type="button" class="close-btn">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
         $('#recordTable').DataTable();
@@ -277,19 +300,41 @@
         }).focus(function() {
             $(this).autocomplete("search", $(this).val());
         });
+
+        // Настройка автозаполнения для поля "Исполнитель"
+        $("#executor").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "/executors",
+                    dataType: "json",
+                    data: {
+                        term: request.term
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 0
+        }).focus(function() {
+            $(this).autocomplete("search", $(this).val());
+        });
     });
 
     // Получаем модальные окна
     var modal = document.getElementById("myModal");
     var addAddressModal = document.getElementById("addAddressModal");
+    var addExecutorModal = document.getElementById("addExecutorModal");
 
     var modalTitle = document.getElementById("modalTitle");
     var form = document.getElementById("recordForm");
     var addressForm = document.getElementById("addressForm");
+    var executorForm = document.getElementById("executorForm");
 
     // Получаем кнопки, которые открывают модальные окна
     var btn = document.getElementById("openModalBtn");
     var addAddressBtn = document.getElementById("openAddAddressModalBtn");
+    var addExecutorBtn = document.getElementById("openAddExecutorModalBtn");
 
     // Получаем элементы <span>, которые закрывают модальные окна
     var spans = document.getElementsByClassName("close");
@@ -303,6 +348,9 @@
     }
     addAddressBtn.onclick = function() {
         addAddressModal.style.display = "block";
+    }
+    addExecutorBtn.onclick = function() {
+        addExecutorModal.style.display = "block";
     }
 
     // Когда пользователь нажимает на <span> (x), закрываем соответствующее модальное окно
@@ -326,6 +374,9 @@
         }
         if (event.target == addAddressModal) {
             addAddressModal.style.display = "none";
+        }
+        if (event.target == addExecutorModal) {
+            addExecutorModal.style.display = "none";
         }
     }
 

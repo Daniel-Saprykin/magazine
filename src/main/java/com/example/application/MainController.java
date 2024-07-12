@@ -19,12 +19,17 @@ public class MainController {
     @Autowired
     private AddressRepository addressRepository;
 
+    @Autowired
+    private ExecutorRepository executorRepository;
+
     @GetMapping("/")
     public String index(Model model) {
         List<Record> records = recordRepository.findAll();
         List<Address> addresses = addressRepository.findAll();
+        List<Executor> executors = executorRepository.findAll();
         model.addAttribute("records", records);
         model.addAttribute("addresses", addresses);
+        model.addAttribute("executors", executors);
         model.addAttribute("record", new Record());
         return "index";
     }
@@ -66,6 +71,26 @@ public class MainController {
                 .stream()
                 .map(Address::getAddress)
                 .filter(address -> address.toLowerCase().contains(term.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    @PostMapping("/addExecutor")
+    public String addExecutor(@RequestParam String name) {
+        if (!executorRepository.findByName(name).isPresent()) {
+            Executor newExecutor = new Executor();
+            newExecutor.setName(name);
+            executorRepository.save(newExecutor);
+        }
+        return "redirect:/";
+    }
+
+    @GetMapping("/executors")
+    @ResponseBody
+    public List<String> getExecutors(@RequestParam String term) {
+        return executorRepository.findAll()
+                .stream()
+                .map(Executor::getName)
+                .filter(name -> name.toLowerCase().contains(term.toLowerCase()))
                 .collect(Collectors.toList());
     }
 }
