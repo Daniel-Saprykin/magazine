@@ -3,8 +3,10 @@
 <head>
     <title>Главная страница</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -128,12 +130,21 @@
         .form-row .form-group:last-child {
             margin-right: 0;
         }
+        .ui-menu {
+            max-height: 150px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .ui-menu .ui-menu-item {
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
         <button id="openModalBtn">Добавить запись</button>
+        <button id="openAddAddressModalBtn">Добавить адрес</button>
     </div>
     <div class="table-container">
         <table id="recordTable">
@@ -165,11 +176,11 @@
     </div>
 </div>
 
-<!-- Модальное окно -->
+<!-- Модальное окно для добавления записи -->
 <div id="myModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 id="modalTitle">Редактировать запись</h2>
+            <h2 id="modalTitle">Добавить запись</h2>
             <span class="close">&times;</span>
         </div>
         <div class="modal-body">
@@ -195,12 +206,7 @@
                 </div>
                 <div class="form-group">
                     <label for="address">Адрес:</label>
-                    <input list="addresses" id="address" name="address" required disabled>
-                    <datalist id="addresses">
-                        <option value="Лященко 8, кв 54">
-                        <option value="Курчатова 1, кв 38">
-                        <option value="Звездная 14, кв 10">
-                    </datalist>
+                    <input type="text" id="address" name="address" required disabled>
                 </div>
                 <div class="form-group">
                     <label for="important">Важно:</label>
@@ -227,47 +233,99 @@
     </div>
 </div>
 
+<!-- Модальное окно для добавления адреса -->
+<div id="addAddressModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Добавить адрес</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="addressForm" action="/addAddress" method="post">
+                <div class="form-group">
+                    <label for="address">Адрес:</label>
+                    <input type="text" id="newAddress" name="address" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit">OK</button>
+                    <button type="button" class="close-btn">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
         $('#recordTable').DataTable();
+
+        // Настройка автозаполнения для поля "Адрес"
+        $("#address").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "/addresses",
+                    dataType: "json",
+                    data: {
+                        term: request.term
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 0
+        }).focus(function() {
+            $(this).autocomplete("search", $(this).val());
+        });
     });
 
-    // Получаем модальное окно
+    // Получаем модальные окна
     var modal = document.getElementById("myModal");
+    var addAddressModal = document.getElementById("addAddressModal");
+
     var modalTitle = document.getElementById("modalTitle");
     var form = document.getElementById("recordForm");
+    var addressForm = document.getElementById("addressForm");
 
-    // Получаем кнопку, которая открывает модальное окно
+    // Получаем кнопки, которые открывают модальные окна
     var btn = document.getElementById("openModalBtn");
+    var addAddressBtn = document.getElementById("openAddAddressModalBtn");
 
-    // Получаем элемент <span>, который закрывает модальное окно
-    var span = document.getElementsByClassName("close")[0];
+    // Получаем элементы <span>, которые закрывают модальные окна
+    var spans = document.getElementsByClassName("close");
 
-    // Получаем кнопку "Отмена", которая закрывает модальное окно
-    var closeBtn = document.getElementsByClassName("close-btn")[0];
+    // Получаем кнопки "Отмена", которые закрывают модальные окна
+    var closeBtns = document.getElementsByClassName("close-btn");
 
-    // Получаем кнопку "Редактировать"
-    var editBtn = document.getElementById("editBtn");
-
-    // Когда пользователь нажимает на кнопку, открываем модальное окно
+    // Когда пользователь нажимает на кнопку, открываем соответствующее модальное окно
     btn.onclick = function() {
         openAddModal();
     }
-
-    // Когда пользователь нажимает на <span> (x), закрываем модальное окно
-    span.onclick = function() {
-        modal.style.display = "none";
+    addAddressBtn.onclick = function() {
+        addAddressModal.style.display = "block";
     }
 
-    // Когда пользователь нажимает на кнопку "Отмена", закрываем модальное окно
-    closeBtn.onclick = function() {
-        modal.style.display = "none";
+    // Когда пользователь нажимает на <span> (x), закрываем соответствующее модальное окно
+    for (var i = 0; i < spans.length; i++) {
+        spans[i].onclick = function() {
+            this.parentElement.parentElement.parentElement.style.display = "none";
+        }
+    }
+
+    // Когда пользователь нажимает на кнопку "Отмена", закрываем соответствующее модальное окно
+    for (var i = 0; i < closeBtns.length; i++) {
+        closeBtns[i].onclick = function() {
+            this.parentElement.parentElement.parentElement.parentElement.style.display = "none";
+        }
     }
 
     // Когда пользователь нажимает в любом месте за пределами модального окна, закрываем его
     window.onclick = function(event) {
         if (event.target == modal) {
             modal.style.display = "none";
+        }
+        if (event.target == addAddressModal) {
+            addAddressModal.style.display = "none";
         }
     }
 

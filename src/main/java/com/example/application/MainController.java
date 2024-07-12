@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 public class MainController {
@@ -15,10 +16,15 @@ public class MainController {
     @Autowired
     private RecordRepository recordRepository;
 
+    @Autowired
+    private AddressRepository addressRepository;
+
     @GetMapping("/")
     public String index(Model model) {
         List<Record> records = recordRepository.findAll();
+        List<Address> addresses = addressRepository.findAll();
         model.addAttribute("records", records);
+        model.addAttribute("addresses", addresses);
         model.addAttribute("record", new Record());
         return "index";
     }
@@ -41,5 +47,25 @@ public class MainController {
         record.setId(id);
         recordRepository.save(record);
         return "redirect:/";
+    }
+
+    @PostMapping("/addAddress")
+    public String addAddress(@RequestParam String address) {
+        if (!addressRepository.findByAddress(address).isPresent()) {
+            Address newAddress = new Address();
+            newAddress.setAddress(address);
+            addressRepository.save(newAddress);
+        }
+        return "redirect:/";
+    }
+
+    @GetMapping("/addresses")
+    @ResponseBody
+    public List<String> getAddresses(@RequestParam String term) {
+        return addressRepository.findAll()
+                .stream()
+                .map(Address::getAddress)
+                .filter(address -> address.toLowerCase().contains(term.toLowerCase()))
+                .collect(Collectors.toList());
     }
 }
