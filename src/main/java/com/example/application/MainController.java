@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +25,7 @@ public class MainController {
 
     @GetMapping("/")
     public String index(Model model) {
-        List<Record> records = recordRepository.findAll();
+        List<Record> records = recordRepository.findAll(Sort.by(Sort.Direction.DESC, "applicationNumber"));
         List<Address> addresses = addressRepository.findAll();
         List<Executor> executors = executorRepository.findAll();
         model.addAttribute("records", records);

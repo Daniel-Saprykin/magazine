@@ -24,6 +24,8 @@ public class Record {
     private boolean important;
     private String description;
     private String result;
+    @Column(name = "completion_date", nullable = false)
     private String completionDate;
+    @Column(name = "application_number", nullable = false)
     private Long applicationNumber;
 }
