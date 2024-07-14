@@ -36,6 +36,8 @@ public class MainController {
 
     @PostMapping("/addRecord")
     public String addRecordSubmit(@ModelAttribute Record record) {
+        long applicationNumber = recordRepository.count() + 1;
+        record.setApplicationNumber(applicationNumber);
         recordRepository.save(record);
         return "redirect:/";
     }
@@ -49,8 +51,12 @@ public class MainController {
 
     @PostMapping("/updateRecord/{id}")
     public String updateRecord(@PathVariable Long id, @ModelAttribute Record record) {
-        record.setId(id);
-        recordRepository.save(record);
+        Optional<Record> existingRecordOpt = recordRepository.findById(id);
+        if (existingRecordOpt.isPresent()) {
+            Record existingRecord = existingRecordOpt.get();
+            record.setApplicationNumber(existingRecord.getApplicationNumber());
+            recordRepository.save(record);
+        }
         return "redirect:/";
     }
 
