@@ -58,7 +58,19 @@ var addAddressBtn = document.getElementById("openAddAddressModalBtn");
 var addExecutorBtn = document.getElementById("openAddExecutorModalBtn");
 
 // Получаем элементы <span>, которые закрывают модальные окна
-var spans = document.getElementsByClassName("close");
+    var span = document.getElementsByClassName("close")[0];
+
+    // Когда пользователь нажимает на <span> (x), закрываем модальное окно
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Когда пользователь нажимает в любом месте за пределами модального окна, закрываем его
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
 
 // Получаем кнопки "Отмена", которые закрывают модальные окна
 var closeBtns = document.getElementsByClassName("close-btn");
@@ -120,30 +132,29 @@ function openAddModal() {
     modal.style.display = "block";
 }
 
-// Открытие модального окна для редактирования записи
-function openEditModal(row) {
-    var id = row.getAttribute("data-id");
-    fetch(`/record/${id}`)
-        .then(response => response.json())
-        .then(data => {
-            modalTitle.textContent = "Редактировать запись";
-            form.action = `/updateRecord/${id}`;
-            setFormEditable(false);
+    // Открытие модального окна для редактирования записи
+    function openEditModal(id) {
+        fetch(`/record/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                modalTitle.textContent = "Редактировать запись";
+                form.action = `/updateRecord/${id}`;
+                setFormEditable(false);
 
-            document.getElementById("date").value = data.date;
-            document.getElementById("time").value = data.time;
-            document.getElementById("shift").value = data.shift;
-            document.getElementById("executor").value = data.executor;
-            document.getElementById("address").value = data.address;
-            document.getElementById("important").checked = data.important;
-            document.getElementById("description").value = data.description;
-            document.getElementById("result").value = data.result;
-            document.getElementById("completionDate").value = data.completionDate;
+                document.getElementById("date").value = data.date;
+                document.getElementById("time").value = data.time;
+                document.getElementById("shift").value = data.shift;
+                document.getElementById("executor").value = data.executor;
+                document.getElementById("address").value = data.address;
+                document.getElementById("important").checked = data.important;
+                document.getElementById("description").value = data.description;
+                document.getElementById("result").value = data.result;
+                document.getElementById("completionDate").value = data.completionDate;
 
-            modal.style.display = "block";
-        })
-        .catch(error => console.error('Error:', error));
-}
+                modal.style.display = "block";
+            })
+            .catch(error => console.error('Error:', error));
+    }
 
 // Установить поля формы в редактируемый или нередактируемый режим
 function setFormEditable(editable) {

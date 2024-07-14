@@ -163,7 +163,8 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="record : ${records}" th:class="${record.important} ? 'important editable' : 'editable'" th:data-id="${record.id}" onclick="openEditModal(this)">
+            <tr th:each="record : ${records}" th:class="${record.important} ? 'important editable' : 'editable'" th:data-id="${record.id}">
+                <td><a href="#" th:text="${record.applicationNumber}" th:onclick="'openEditModal(' + ${record.id} + ');return false;'"></a></td>
                 <td th:text="${record.applicationNumber}"></td>
                 <td th:text="${record.date}"></td>
                 <td th:text="${record.shift}"></td>
