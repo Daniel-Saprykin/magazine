@@ -38,6 +38,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: auto;
         }
         th, td {
             border: 1px solid #000;
@@ -151,28 +152,27 @@
         <table id="recordTable">
             <thead>
             <tr>
-                <th>№</th>
-                <th>Дата</th>
-                <th>Смена</th>
-                <th>Время</th>
-                <th>Исполнитель</th>
+                <th>Номер заявки</th>
+                <th>Детали</th>
                 <th>Адрес</th>
                 <th>Описание заявки</th>
                 <th>Результат</th>
-                <th>Дата исполнения</th>
+
             </tr>
             </thead>
             <tbody>
-            <tr th:each="record : ${records}" th:class="${record.important} ? 'important editable' : 'editable'" th:data-id="${record.id}">
+            <tr th:each="record : ${records}" th:class="${record.important} ? 'important editable' : 'editable'" th:data-id="${record.id}" onclick="openEditModal(this)">
                 <td><a href="#" th:text="${record.applicationNumber}" th:onclick="'openEditModal(' + ${record.id} + ');return false;'"></a></td>
-                <td th:text="${record.date}"></td>
-                <td th:text="${record.shift}"></td>
-                <td th:text="${record.time}"></td>
-                <td th:text="${record.executor}"></td>
-                <td th:text="${record.address}"></td>
+                <td class="details">
+                    <div><strong>Дата:</strong> <span th:text="${record.date}"></span> <strong>Время:</strong> <span th:text="${record.time}"></span> </div>
+                    <div><strong>Смена:</strong> <span th:text="${record.shift}"></span> <strong>Исполнитель:</strong> <span th:text="${record.executor}"></span></div>
+                </td>
+                <td class="details">
+                    <div><strong>Адрес:</strong>  <span th:text="${record.address}"></span></div>
+                    <div><strong>Дата исполнения:</strong> <span th:text="${record.completionDate}"></span></div>
+                </td>
                 <td th:text="${record.description}"></td>
                 <td th:text="${record.result}"></td>
-                <td th:text="${record.completionDate}"></td>
             </tr>
             </tbody>
         </table>
