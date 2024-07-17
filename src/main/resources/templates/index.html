@@ -3,8 +3,10 @@
 <head>
     <title>Главная страница</title>
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -128,17 +130,28 @@
         .form-row .form-group:last-child {
             margin-right: 0;
         }
+        .ui-menu {
+            max-height: 150px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        .ui-menu .ui-menu-item {
+            padding: 5px;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
         <button id="openModalBtn">Добавить запись</button>
+        <button id="openAddAddressModalBtn">Добавить адрес</button>
+        <button id="openAddExecutorModalBtn">Добавить исполнителя</button>
     </div>
     <div class="table-container">
         <table id="recordTable">
             <thead>
             <tr>
+                <th>№</th>
                 <th>Дата</th>
                 <th>Смена</th>
                 <th>Время</th>
@@ -150,7 +163,8 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="record : ${records}" th:class="${record.important} ? 'important editable' : 'editable'" th:data-id="${record.id}" onclick="openEditModal(this)">
+            <tr th:each="record : ${records}" th:class="${record.important} ? 'important editable' : 'editable'" th:data-id="${record.id}">
+                <td><a href="#" th:text="${record.applicationNumber}" th:onclick="'openEditModal(' + ${record.id} + ');return false;'"></a></td>
                 <td th:text="${record.date}"></td>
                 <td th:text="${record.shift}"></td>
                 <td th:text="${record.time}"></td>
@@ -165,11 +179,11 @@
     </div>
 </div>
 
-<!-- Модальное окно -->
+<!-- Модальное окно для добавления записи -->
 <div id="myModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h2 id="modalTitle">Редактировать запись</h2>
+            <h2 id="modalTitle">Добавить запись</h2>
             <span class="close">&times;</span>
         </div>
         <div class="modal-body">
@@ -195,12 +209,7 @@
                 </div>
                 <div class="form-group">
                     <label for="address">Адрес:</label>
-                    <input list="addresses" id="address" name="address" required disabled>
-                    <datalist id="addresses">
-                        <option value="Лященко 8, кв 54">
-                        <option value="Курчатова 1, кв 38">
-                        <option value="Звездная 14, кв 10">
-                    </datalist>
+                    <input type="text" id="address" name="address" required disabled>
                 </div>
                 <div class="form-group">
                     <label for="important">Важно:</label>
@@ -227,108 +236,50 @@
     </div>
 </div>
 
-<script>
-    $(document).ready(function() {
-        $('#recordTable').DataTable();
-    });
+<!-- Модальное окно для добавления адреса -->
+<div id="addAddressModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Добавить адрес</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="addressForm" action="/addAddress" method="post">
+                <div class="form-group">
+                    <label for="address">Адрес:</label>
+                    <input type="text" id="newAddress" name="address" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit">OK</button>
+                    <button type="button" class="close-btn">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-    // Получаем модальное окно
-    var modal = document.getElementById("myModal");
-    var modalTitle = document.getElementById("modalTitle");
-    var form = document.getElementById("recordForm");
+<!-- Модальное окно для добавления исполнителя -->
+<div id="addExecutorModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Добавить исполнителя</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="executorForm" action="/addExecutor" method="post">
+                <div class="form-group">
+                    <label for="executor">Исполнитель:</label>
+                    <input type="text" id="newExecutor" name="executor" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit">OK</button>
+                    <button type="button" class="close-btn">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-    // Получаем кнопку, которая открывает модальное окно
-    var btn = document.getElementById("openModalBtn");
-
-    // Получаем элемент <span>, который закрывает модальное окно
-    var span = document.getElementsByClassName("close")[0];
-
-    // Получаем кнопку "Отмена", которая закрывает модальное окно
-    var closeBtn = document.getElementsByClassName("close-btn")[0];
-
-    // Получаем кнопку "Редактировать"
-    var editBtn = document.getElementById("editBtn");
-
-    // Когда пользователь нажимает на кнопку, открываем модальное окно
-    btn.onclick = function() {
-        openAddModal();
-    }
-
-    // Когда пользователь нажимает на <span> (x), закрываем модальное окно
-    span.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // Когда пользователь нажимает на кнопку "Отмена", закрываем модальное окно
-    closeBtn.onclick = function() {
-        modal.style.display = "none";
-    }
-
-    // Когда пользователь нажимает в любом месте за пределами модального окна, закрываем его
-    window.onclick = function(event) {
-        if (event.target == modal) {
-            modal.style.display = "none";
-        }
-    }
-
-    // Открытие модального окна для добавления записи
-    function openAddModal() {
-        form.reset();
-        modalTitle.textContent = "Добавить запись";
-        form.action = "/addRecord";
-        setFormEditable(true);
-
-        var today = new Date().toISOString().split('T')[0];
-        document.getElementById("date").value = today;
-
-        var now = new Date();
-        var hours = now.getHours().toString().padStart(2, '0');
-        var minutes = now.getMinutes().toString().padStart(2, '0');
-        var currentTime = hours + ':' + minutes;
-        document.getElementById("time").value = currentTime;
-
-        modal.style.display = "block";
-    }
-
-    // Открытие модального окна для редактирования записи
-    function openEditModal(row) {
-        var id = row.getAttribute("data-id");
-        fetch(`/record/${id}`)
-            .then(response => response.json())
-            .then(data => {
-                modalTitle.textContent = "Редактировать запись";
-                form.action = `/updateRecord/${id}`;
-                setFormEditable(false);
-
-                document.getElementById("date").value = data.date;
-                document.getElementById("time").value = data.time;
-                document.getElementById("shift").value = data.shift;
-                document.getElementById("executor").value = data.executor;
-                document.getElementById("address").value = data.address;
-                document.getElementById("important").checked = data.important;
-                document.getElementById("description").value = data.description;
-                document.getElementById("result").value = data.result;
-                document.getElementById("completionDate").value = data.completionDate;
-
-                modal.style.display = "block";
-            })
-            .catch(error => console.error('Error:', error));
-    }
-
-    // Установить поля формы в редактируемый или нередактируемый режим
-    function setFormEditable(editable) {
-        var elements = form.elements;
-        for (var i = 0; i < elements.length; i++) {
-            elements[i].disabled = !editable;
-        }
-        editBtn.style.display = editable ? "none" : "inline-block";
-        form.querySelector('button[type="submit"]').disabled = !editable;
-    }
-
-    // Когда пользователь нажимает на кнопку "Редактировать", делаем форму редактируемой
-    editBtn.onclick = function() {
-        setFormEditable(true);
-    }
-</script>
+<script src="/js/main.js"></script>
 </body>
 </html>

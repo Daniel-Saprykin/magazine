@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="com.obiscr.chatgpt.settings.EasyCodeState">
+    <option name="projectFiles" value="$PROJECT_DIR$/src/main/java/com/example/application/Address.java;/home/daniel/java/uzkh/uzkh/src/main/java/com/example/application/AddressRepository.java;/home/daniel/java/uzkh/uzkh/src/main/java/com/example/application/DemoApplication.java;/home/daniel/java/uzkh/uzkh/src/main/java/com/example/application/Executor.java;/home/daniel/java/uzkh/uzkh/src/main/java/com/example/application/ExecutorRepository.java;/home/daniel/java/uzkh/uzkh/src/main/java/com/example/application/MainController.java;/home/daniel/java/uzkh/uzkh/src/main/java/com/example/application/Record.java;/home/daniel/java/uzkh/uzkh/src/main/java/com/example/application/RecordRepository.java;/home/daniel/java/uzkh/uzkh/src/main/resources/templates/addRecord.html;/home/daniel/java/uzkh/uzkh/src/main/resources/templates/index.html;/home/daniel/java/uzkh/uzkh/pom.xml;/home/daniel/java/uzkh/uzkh/README.md" />
+  </component>
+</project>
