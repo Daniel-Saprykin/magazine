@@ -102,11 +102,11 @@ document.addEventListener('DOMContentLoaded', function() {
             "order": [[0, "desc"]] // Порядковый номер столбца начинается с 0, "desc" для сортировки по убыванию
         });
 
-        // Настройка автозаполнения для поля "Адрес"
-        $("#address").autocomplete({
+    function setupAutocomplete(fieldId, url, minLength) {
+        $(fieldId).autocomplete({
             source: function(request, response) {
                 $.ajax({
-                    url: "/addresses",
+                    url: url,
                     dataType: "json",
                     data: {
                         term: request.term
@@ -116,47 +116,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             },
-            minLength: 0
+            minLength: minLength
         }).focus(function() {
             $(this).autocomplete("search", $(this).val());
         });
+    }
+
+        // Настройка автозаполнения для поля "Адрес" в модальном окне добавить запись
+        setupAutocomplete("#address", "/addresses", 0)
+
+        // Настройка автозаполнения для поля "Адрес" в модальном окне отчета
+        setupAutocomplete("#addressesReport", "/addresses", 0)
 
         // Настройка автозаполнения для поля "Исполнитель" в модальном окне отчета
-        $("#executorReport").autocomplete({
-            source: function(request, response) {
-                $.ajax({
-                    url: "/executors",
-                    dataType: "json",
-                    data: {
-                        term: request.term
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            minLength: 0
-        }).focus(function() {
-            $(this).autocomplete("search", $(this).val());
-        });
+        setupAutocomplete("#executorReport", "/executors", 0)
 
-        // Настройка автозаполнения для поля "Исполнитель"
-        $("#executor").autocomplete({
-            source: function(request, response) {
-                $.ajax({
-                    url: "/executors",
-                    dataType: "json",
-                    data: {
-                        term: request.term
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            minLength: 0
-        }).focus(function() {
-            $(this).autocomplete("search", $(this).val());
-        });
+        // Настройка автозаполнения для поля "Исполнитель" в модальном окне добавить запись
+        setupAutocomplete("#executor", "/executors", 0)
     });
 });

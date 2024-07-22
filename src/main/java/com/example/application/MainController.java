@@ -121,14 +121,15 @@ public class MainController {
     public void generateReport(HttpServletResponse response,
                                @RequestParam("startDate") String startDateStr,
                                @RequestParam("endDate") String endDateStr,
-                               @RequestParam(value = "executor", required = false) String executor) {
+                               @RequestParam(value = "executor", required = false) String executor,
+                               @RequestParam(value = "address", required = false)  String address) {
         try {
             // Преобразуем строки в даты
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
             Date startDate = formatter.parse(startDateStr);
             Date endDate = formatter.parse(endDateStr);
 
-            reportController.generateReport(response, startDate, endDate, executor);
+            reportController.generateReport(response, startDate, endDate, executor, address);
         } catch (IOException | DocumentException | ParseException e) {
             e.printStackTrace();
             // Обработка ошибки, возможно, отправка ошибки клиенту
