@@ -147,6 +147,7 @@
         <button id="openModalBtn">Добавить запись</button>
         <button id="openAddAddressModalBtn">Добавить адрес</button>
         <button id="openAddExecutorModalBtn">Добавить исполнителя</button>
+        <button id="openReportModalBtn">Отчет</button> <!-- Новая кнопка -->
     </div>
     <div class="table-container">
         <table id="recordTable">
@@ -273,6 +274,36 @@
                 </div>
                 <div class="form-group">
                     <button type="submit">OK</button>
+                    <button type="button" class="close-btn">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для настройки отчета -->
+<div id="reportModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Настройка отчета</h2>
+            <span class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="reportForm" action="/generateReport" method="post" target="_blank">
+                <div class="form-group">
+                    <label for="startDate">Начальная дата:</label>
+                    <input type="date" id="startDate" name="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="endDate">Конечная дата:</label>
+                    <input type="date" id="endDate" name="endDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="executor">Исполнитель:</label>
+                    <input type="text" id="executorReport" name="executor">
+                </div>
+                <div class="form-group">
+                    <button type="submit">Сформировать отчет</button>
                     <button type="button" class="close-btn">Отмена</button>
                 </div>
             </form>

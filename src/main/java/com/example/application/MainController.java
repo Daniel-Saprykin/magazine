@@ -1,15 +1,28 @@
 package com.example.application;
 
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.data.domain.Sort;
-
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import com.itextpdf.text.DocumentException;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import java.text.ParseException;
+
+import javax.servlet.http.HttpServletResponse;
+
 
 @Controller
 public class MainController {
@@ -22,6 +35,9 @@ public class MainController {
 
     @Autowired
     private ExecutorRepository executorRepository;
+
+    @Autowired
+    private ReportController reportController;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -99,5 +115,23 @@ public class MainController {
                 .map(Executor::getName)
                 .filter(name -> name.toLowerCase().contains(term.toLowerCase()))
                 .collect(Collectors.toList());
+    }
+
+    @PostMapping("/generateReport")
+    public void generateReport(HttpServletResponse response,
+                               @RequestParam("startDate") String startDateStr,
+                               @RequestParam("endDate") String endDateStr,
+                               @RequestParam(value = "executor", required = false) String executor) {
+        try {
+            // Преобразуем строки в даты
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+            Date startDate = formatter.parse(startDateStr);
+            Date endDate = formatter.parse(endDateStr);
+
+            reportController.generateReport(response, startDate, endDate, executor);
+        } catch (IOException | DocumentException | ParseException e) {
+            e.printStackTrace();
+            // Обработка ошибки, возможно, отправка ошибки клиенту
+        }
     }
 }

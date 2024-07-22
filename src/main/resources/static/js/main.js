@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var editBtn = document.getElementById("editBtn");
     var form = document.getElementById("recordForm");
     var modalTitle = document.getElementById("modalTitle");
+    var reportModal = document.getElementById("reportModal");
 
     // Настройка кнопок для открытия модальных окон
     document.getElementById("openModalBtn").onclick = function() {
@@ -14,7 +15,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById("openAddExecutorModalBtn").onclick = function() {
         document.getElementById("addExecutorModal").style.display = "block";
     };
-
+    document.getElementById("openReportModalBtn").onclick = function() {
+        reportModal.style.display = "block";
+    };
     // Настройка кнопок для закрытия модальных окон
     var closeElements = document.querySelectorAll(".close, .close-btn");
     closeElements.forEach(function(elem) {
@@ -104,6 +107,25 @@ document.addEventListener('DOMContentLoaded', function() {
             source: function(request, response) {
                 $.ajax({
                     url: "/addresses",
+                    dataType: "json",
+                    data: {
+                        term: request.term
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 0
+        }).focus(function() {
+            $(this).autocomplete("search", $(this).val());
+        });
+
+        // Настройка автозаполнения для поля "Исполнитель" в модальном окне отчета
+        $("#executorReport").autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "/executors",
                     dataType: "json",
                     data: {
                         term: request.term
