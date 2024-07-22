@@ -18,27 +18,24 @@ import org.springframework.stereotype.Controller;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import java.util.stream.Stream;
-
-
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 public class ReportController {
 
     @Autowired
     private RecordRepository recordRepository;
 
+    @RequestMapping(value = "/generateReport", method = RequestMethod.GET)
     public void generateReport(HttpServletResponse response, Date startDate, Date endDate, String executor, String address) throws IOException, DocumentException {
         List<Record> records = recordRepository.findAll().stream()
                 .filter(record -> {
-                    try {
-                        Date recordDate = record.getParsedDate();
+                        Date recordDate = record.getDate();
                         boolean isDateInRange = !recordDate.before(startDate) && !recordDate.after(endDate);
                         boolean isExecutorMatch = executor == null || executor.isEmpty() || executor.equals(record.getExecutor());
                         boolean isAddressMatch = address == null || address.isEmpty() || address.equals(record.getAddress());
                         return isDateInRange && isExecutorMatch && isAddressMatch;
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                        return false;
-                    }
+
                 })
                 .collect(Collectors.toList());
 
@@ -55,7 +52,7 @@ public class ReportController {
         Font cellFont = new Font(bf, 10, Font.NORMAL);
 
         // Заголовки и информация
-        document.add(new Paragraph("Журнал Аварийно-диспетчерской службы г. Обнинск", titleFont));
+        document.add(new Paragraph("Журнал", titleFont));
         document.add(new Paragraph("Отчет за период: " + startDate + " - " + endDate, subTitleFont));
         document.add(Chunk.NEWLINE);
 
@@ -94,12 +91,12 @@ public class ReportController {
     private void addRows(PdfPTable table, List<Record> records, Font cellFont) {
         for (Record record : records) {
             table.addCell(new PdfPCell(new Phrase(String.valueOf(record.getId()), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(record.getDate(), cellFont)));
+            table.addCell(new PdfPCell(new Phrase(String.valueOf(record.getDate()), cellFont)));
             table.addCell(new PdfPCell(new Phrase(String.valueOf(record.getShift()), cellFont)));
             table.addCell(new PdfPCell(new Phrase(record.getTime(), cellFont)));
             table.addCell(new PdfPCell(new Phrase(record.getExecutor(), cellFont)));
             table.addCell(new PdfPCell(new Phrase(record.getAddress(), cellFont)));
-            table.addCell(new PdfPCell(new Phrase(record.getCompletionDate(), cellFont)));
+            table.addCell(new PdfPCell(new Phrase(String.valueOf(record.getCompletionDate()), cellFont)));
             table.addCell(new PdfPCell(new Phrase(record.getResult(), cellFont)));
         }
     }

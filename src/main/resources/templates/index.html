@@ -304,13 +304,14 @@
                 </div>
                 <div class="form-group">
                     <label for="executor">Адрес:</label>
-                    <input type="text" id="addressesReport" name="addresses">
+                    <input type="text" id="addressesReport" name="address">
                 </div>
                 <div class="form-group">
                     <button type="submit">Сформировать отчет</button>
-                    <button type="button" class="close-btn">Отмена</button>
+                    <button type="button" id="generateReportBtn" class="close-btn">Отмена</button>
                 </div>
             </form>
+            <iframe id="reportFrame" style="width: 100%; height: 400px;"></iframe>
         </div>
     </div>
 </div>

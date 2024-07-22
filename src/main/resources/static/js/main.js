@@ -60,7 +60,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 modalTitle.textContent = "Редактировать запись";
                 form.action = `/updateRecord/${id}`;
                 setFormEditable(false);
-                document.getElementById("date").value = data.date;
+
+                const formattedDate = new Date(data.date).toISOString().split('T')[0];
+                document.getElementById("date").value = formattedDate;
                 document.getElementById("time").value = data.time;
                 document.getElementById("shift").value = data.shift;
                 document.getElementById("executor").value = data.executor;
@@ -73,6 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => console.error('Error:', error));
     }
+
 
     // Установка режима редактирования
     function setFormEditable(editable) {
@@ -133,5 +136,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Настройка автозаполнения для поля "Исполнитель" в модальном окне добавить запись
         setupAutocomplete("#executor", "/executors", 0)
+
+        // Обновление предварительного просмотра отчета
+        $("#reportForm input, #reportForm select").on("change", updateReportPreview);
+        document.getElementById("generateReportBtn").onclick = updateReportPreview;
+
+        function updateReportPreview() {
+            var formData = $("#reportForm").serialize();
+            console.log("Обновление отчета с данными:", formData);
+            $("#reportFrame").attr("src", "/generateReport?" + formData);
+        }
     });
 });

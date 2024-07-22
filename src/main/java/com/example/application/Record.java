@@ -9,7 +9,9 @@ import javax.persistence.Id;
 import lombok.Setter;
 import lombok.Getter;
 import java.util.Date;
-import java.text.ParseException;
+import org.springframework.format.annotation.DateTimeFormat;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 //
 @Getter
 @Setter
@@ -19,7 +21,9 @@ public class Record {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String date;
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date date;
     private int shift;
     private String time;
     private String executor;
@@ -27,15 +31,17 @@ public class Record {
     private boolean important;
     private String description;
     private String result;
-    @Column(name = "completion_date", nullable = false)
-    private String completionDate;
+    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "completion_date", nullable = true)
+    private Date completionDate;
     @Column(name = "application_number", nullable = false)
     private Long applicationNumber;
 
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public Date getParsedDate() throws ParseException {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); // используйте нужный формат
-        return format.parse(this.date);
-    }
+//    public Date getParsedDate() throws ParseException {
+//        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd"); // используйте нужный формат
+//        return format.parse(this.date);
+//    }
 }

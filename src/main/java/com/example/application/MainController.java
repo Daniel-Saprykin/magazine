@@ -51,6 +51,7 @@ public class MainController {
         return "index";
     }
 
+
     @PostMapping("/addRecord")
     public String addRecordSubmit(@ModelAttribute Record record) {
         long applicationNumber = recordRepository.count() + 1;
@@ -117,22 +118,17 @@ public class MainController {
                 .collect(Collectors.toList());
     }
 
+
     @PostMapping("/generateReport")
     public void generateReport(HttpServletResponse response,
-                               @RequestParam("startDate") String startDateStr,
-                               @RequestParam("endDate") String endDateStr,
+                               @RequestParam("startDate") Date startDate,
+                               @RequestParam("endDate") Date endDate,
                                @RequestParam(value = "executor", required = false) String executor,
-                               @RequestParam(value = "address", required = false)  String address) {
-        try {
-            // Преобразуем строки в даты
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-            Date startDate = formatter.parse(startDateStr);
-            Date endDate = formatter.parse(endDateStr);
+                               @RequestParam(value = "address", required = false)  String address) throws DocumentException, IOException {
+
+            System.out.println("Генерация отчета с параметрами: startDate=" + startDate + ", endDate=" + endDate + ", executor=" + executor + ", address=" + address);
 
             reportController.generateReport(response, startDate, endDate, executor, address);
-        } catch (IOException | DocumentException | ParseException e) {
-            e.printStackTrace();
-            // Обработка ошибки, возможно, отправка ошибки клиенту
-        }
+
     }
 }
