@@ -20,6 +20,9 @@ import com.itextpdf.text.pdf.*;
 import java.util.stream.Stream;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 @Controller
 public class ReportController {
 
@@ -100,4 +103,6 @@ public class ReportController {
             table.addCell(new PdfPCell(new Phrase(record.getResult(), cellFont)));
         }
     }
+
+
 }

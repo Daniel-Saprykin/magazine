@@ -13,14 +13,10 @@ import org.springframework.ui.Model;
 import org.springframework.data.domain.Sort;
 import java.util.Optional;
 import com.itextpdf.text.DocumentException;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import java.text.ParseException;
+import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import org.springframework.format.annotation.DateTimeFormat;
 import javax.servlet.http.HttpServletResponse;
 
 
@@ -121,8 +117,8 @@ public class MainController {
 
     @PostMapping("/generateReport")
     public void generateReport(HttpServletResponse response,
-                               @RequestParam("startDate") Date startDate,
-                               @RequestParam("endDate") Date endDate,
+                               @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd")  Date startDate,
+                               @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd")  Date endDate,
                                @RequestParam(value = "executor", required = false) String executor,
                                @RequestParam(value = "address", required = false)  String address) throws DocumentException, IOException {
 
@@ -131,4 +127,5 @@ public class MainController {
             reportController.generateReport(response, startDate, endDate, executor, address);
 
     }
+
 }

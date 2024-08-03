@@ -1,0 +1,50 @@
+/* styles.css */
+
+table {
+    width: 100%;
+    table-layout: auto; /* Автоматическая подстройка ширины столбцов */
+    border-collapse: collapse; /* Уменьшает расстояние между границами ячеек */
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+    word-wrap: break-word; /* Перенос слов внутри ячеек */
+}
+
+th {
+    background-color: #f2f2f2;
+    white-space: nowrap; /* Запрещает перенос текста */
+}
+
+/* Пример стилей для конкретных столбцов, если нужно */
+.request-number {
+    text-align: center;
+    max-width: 10px; /* Максимальная ширина для номера заявки */
+}
+
+.details {
+    width: auto;
+    max-width: 190px; /* Пример ширины для поля деталей */
+}
+
+.adress {
+    width: auto;
+    max-width: 150px; /* Пример ширины для поля деталей */
+    white-space: normal; /* Разрешает перенос текста */
+}
+
+.description {
+    width: auto;
+    max-width: 300px; /* Пример ширины для поля деталей */
+    white-space: normal; /* Разрешает перенос текста */
+    word-wrap: break-word; /* Перенос слов внутри ячеек */
+}
+
+.result {
+    width: auto;
+    max-width: 300px; /* Пример ширины для поля деталей */
+    white-space: normal; /* Разрешает перенос текста */
+    word-wrap: break-word; /* Перенос слов внутри ячеек */
+}

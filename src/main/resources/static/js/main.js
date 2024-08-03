@@ -4,6 +4,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var form = document.getElementById("recordForm");
     var modalTitle = document.getElementById("modalTitle");
     var reportModal = document.getElementById("reportModal");
+    var reportPreview = document.getElementById("reportPreview");
+    var printReportBtn = document.getElementById("printReportBtn");
 
     // Настройка кнопок для открытия модальных окон
     document.getElementById("openModalBtn").onclick = function() {
@@ -61,8 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 form.action = `/updateRecord/${id}`;
                 setFormEditable(false);
 
-                const formattedDate = new Date(data.date).toISOString().split('T')[0];
-                document.getElementById("date").value = formattedDate;
+                document.getElementById("date").value = data.date.split("T")[0];
                 document.getElementById("time").value = data.time;
                 document.getElementById("shift").value = data.shift;
                 document.getElementById("executor").value = data.executor;
@@ -102,8 +103,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
     $(document).ready(function() {
         $('#recordTable').DataTable({
+            "columnDefs": [
+                { "width": "10px", "targets": 0 } // Задает ширину для первого столбца
+            ],
             "order": [[0, "desc"]] // Порядковый номер столбца начинается с 0, "desc" для сортировки по убыванию
         });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Функция для установки минимальной ширины столбцов на основе содержимого
+    function adjustColumnWidth() {
+        const table = document.getElementById('recordTable');
+        const ths = table.querySelectorAll('th');
+        const trs = table.querySelectorAll('tbody tr');
+
+        ths.forEach((th, index) => {
+            let maxWidth = th.clientWidth;
+
+            trs.forEach(tr => {
+                const td = tr.children[index];
+                if (td) {
+                    const cellWidth = td.clientWidth;
+                    if (cellWidth > maxWidth) {
+                        maxWidth = cellWidth;
+                    }
+                }
+            });
+
+            th.style.width = `${maxWidth}px`;
+            th.style.minWidth = `${maxWidth}px`;
+        });
+    }
+
+    adjustColumnWidth(); // Настройка ширины при загрузке страницы
 
     function setupAutocomplete(fieldId, url, minLength) {
         $(fieldId).autocomplete({
@@ -137,14 +168,107 @@ document.addEventListener('DOMContentLoaded', function() {
         // Настройка автозаполнения для поля "Исполнитель" в модальном окне добавить запись
         setupAutocomplete("#executor", "/executors", 0)
 
-        // Обновление предварительного просмотра отчета
-        $("#reportForm input, #reportForm select").on("change", updateReportPreview);
-        document.getElementById("generateReportBtn").onclick = updateReportPreview;
 
-        function updateReportPreview() {
-            var formData = $("#reportForm").serialize();
-            console.log("Обновление отчета с данными:", formData);
-            $("#reportFrame").attr("src", "/generateReport?" + formData);
-        }
+        // Настройка предварительного просмотра отчета
+//        document.getElementById("generateReportForm").addEventListener("submit", function(event) {
+//            event.preventDefault();
+//
+//            const startDate = document.getElementById("startDate").value;
+//            const endDate = document.getElementById("endDate").value;
+//            const executor = document.getElementById("executorReport").value;
+//            const address = document.getElementById("addressesReport").value;
+//
+//            fetch('/generateReportPreview', {
+//                method: 'POST',
+//                headers: {
+//                    'Content-Type': 'application/json'
+//                },
+//                body: JSON.stringify({
+//                    startDate: startDate,
+//                    endDate: endDate,
+//                    executor: executor,
+//                    address: address
+//                })
+//            })
+//            .then(response => response.text())
+//            .then(html => {
+//                document.getElementById("reportPreview").innerHTML = html;
+//            })
+//            .catch(error => console.error('Error:', error));
+//        });
+              // Обработчик формы для генерации отчета
+        document.getElementById("generateReportForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+            const executor = document.getElementById("executorReport").value;
+            const address = document.getElementById("addressesReport").value;
+
+            fetch('/generateReport', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    startDate: startDate,
+                    endDate: endDate,
+                    executor: executor,
+                    address: address
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.blob();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'report.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Обработчик для кнопки "Сформировать отчет"
+        $("#generateReportForm").submit(function(event) {
+            event.preventDefault();
+            const startDate = $("#startDate").val();
+            const endDate = $("#endDate").val();
+            const executor = $("#executorReport").val();
+            const address = $("#addressesReport").val();
+
+            fetch('/generateReport', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    startDate: startDate,
+                    endDate: endDate,
+                    executor: executor,
+                    address: address
+                })
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                reportPreview.src = url;
+                reportPreview.style.display = "block";
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Обработчик для кнопки "Напечатать отчет"
+        printReportBtn.onclick = function() {
+            reportPreview.contentWindow.print();
+        };
+
     });
 });
